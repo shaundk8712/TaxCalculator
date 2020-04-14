@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "Home page";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Welcome to the main dashboard</h1>
+</div>
+
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form>
+            <div class="form-group">
+                <center><a asp-controller="Calculator" asp-action="Index" class="btn btn-primary">Tax Calculator</a></center>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

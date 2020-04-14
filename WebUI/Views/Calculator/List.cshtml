@@ -1,0 +1,131 @@
+﻿@model IEnumerable<TaxCalculator.Domain.Entities.IncomeTax>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<style>
+
+
+    .dropdown-chevron-blue {
+        color: #007bff
+    }
+
+    .dropdown-item-icon {
+        margin-right: 8px;
+    }
+</style>
+
+<h1>Tax Calculations - Dashboard</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-success">Create new Tax entry</a>
+</p>
+
+<!-- search filters -->
+<div class="row">
+    <div class="col">
+
+        <input type="text" id="userSearchInput" class="search-input" onkeyup="filterTaxEntries()" placeholder="Search by postal code" title="Type in a postal code">
+
+
+    </div>
+    <div class="col">
+        <button class="btn btn-primary searchBtn" onclick="filterTaxEntries()">Apply</button>
+    </div>
+</div>
+
+<!-- search results-->
+<table id="taxEntriesTable" class="table table-striped taxEntriesTable">
+    <thead>
+        <tr>
+            <th>
+                Id
+            </th>
+            <th>
+                Income Amount(R)
+            </th>
+            <th>
+                Postal Code
+            </th>
+            <th>Tax Amount(R)</th>
+            <th>Tax Type</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr data-tr-id="@item.Id">
+                <td>
+                    <span style="font-weight:600">@Html.DisplayFor(modelItem => item.Id)</span>
+                </td>
+
+                <td>
+                   <span style="display:block">@Html.DisplayFor(modelItem => item.IncomeAmount)</span>
+                </td>
+
+                <td style="width: 50px">
+                    @Html.DisplayFor(modelItem => item.PostalCode)
+                </td>
+
+                <td style="width: 90px">
+                    @Html.DisplayFor(modelItem => item.TaxAmount)
+                </td>
+
+                <td style="width: 90px">
+                    @Html.DisplayFor(modelItem => item.TaxCalculationType)
+                </td>
+
+                <td width="40px">
+
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle dropdown-chevron-blue" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Edit/Delete</button>
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenu2">
+
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="dropdown-item"><i class="fa fa-pencil-alt dropdown-item-icon"></i>Edit</a>
+
+                            <a href=""
+                               class="dropdown-item"
+                               data-toggle="modal"
+                               data-target="#deleteTaxEntryModal"
+                               data-delete-obj-id="@item.Id" ><i class="fa fa-trash dropdown-item-icon"></i>Delete</a>
+                        </div>
+                    </div>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- delete confirm -->
+@await Html.PartialAsync("List.DeleteDialog.cshtml")
+
+@section Scripts {
+    <script>
+        function filterTaxEntries() {
+
+            var input, filter, table, tr, td, i, txtValue;
+
+            input = document.getElementById("userSearchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("taxEntriesTable");
+            tr = table.getElementsByTagName("tr");
+
+            for (i = 0; i < tr.length; i++) {
+                td = tr[i].getElementsByTagName("td")[0];
+                if (td) {
+                    txtValue = td.textContent || td.innerText;
+                    if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                        tr[i].style.display = "";
+                    } else {
+                        tr[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+    }

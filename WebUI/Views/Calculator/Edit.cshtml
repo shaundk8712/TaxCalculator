@@ -1,0 +1,158 @@
+﻿@model TaxCalculator.Domain.Entities.IncomeTax
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit (User Id -  @Model.Id): Income TAX Calculator</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+
+            <h5>Income Details</h5>
+
+            <div class="form-group">
+                <label asp-for="IncomeAmount" class="control-label">Income Amount</label>
+                <input id="txtIncomeAmount" asp-for="IncomeAmount" class="form-control" />
+                <span asp-validation-for="IncomeAmount" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="PostalCode" class="control-label">Postal Code</label>
+                <select id="ddlPostalCode" asp-for="PostalCode" class="form-control">
+                    <option selected disabled> Please select a postal code</option>
+                    <option value="7441"> 7441 </option>
+                    <option value="A100"> A100 </option>
+                    <option value="7000"> 7000 </option>
+                    <option value="1000"> 1000 </option>
+                </select>
+                <hr />
+                <div class="row hidden" id="outputDisplayTaxType">
+                    <div class="col-md-6"> <label asp-for="TaxCalculationType" class="control-label orange">Detected Tax Type:</label></div>
+                    <div class="col-md-6"> <input id="lblTaxType" asp-for="TaxCalculationType" class="form-control customDisplay" /></div>
+                </div>
+                <span asp-validation-for="PostalCode" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <input id="btnCalculateTax" type="button" value="Preview Calculation" class="btn btn-warning" /> <input type="submit" value="Save Calculation" class="btn btn-success" />
+            </div>
+        </form>
+        <hr />
+        <div class="row">
+            <div class="col-md-12 hidden" id="outputDisplayTaxAmount">
+                <span class="green">Tax calculated: R</span> <span id="lblTaxAmount"></span>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .hidden {
+            display: none;
+        }
+
+        .customDisplay {
+            border: none;
+            padding: 0 !important;
+            margin: 0 !important;
+            height: 23px;
+        }
+
+        .orange {
+            font-weight: bold;
+            color: orange;
+        }
+
+        .green {
+            font-weight: bold;
+            color: green;
+        }
+    </style>
+}
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script type="text/javascript">
+        $(function () {
+
+            $("#btnCalculateTax").click(function () {
+
+                var data = {
+                    incomeAmount: $("#txtIncomeAmount").val(),
+                    postalCode: $("#ddlPostalCode").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Calculator/CalculateTax",
+                    data: data,
+                    success: function (result) {
+                        $("#lblTaxAmount").html(result);
+                        $("#outputDisplayTaxAmount").removeClass("hidden");
+                    },
+                    failure: function (response) {
+                        alert("Faulre:" + response.responseText);
+                    },
+                    error: function (response) {
+                        alert("Error:" + response.responseText);
+                    }
+                });
+            });
+
+            $("#ddlPostalCode").change(function () {
+
+                var data = {
+                    postalCode: $("#ddlPostalCode").val()
+                };
+
+                $.ajax({
+                    type: "POST",
+                    url: "/Calculator/CalculateType",
+                    data: data,
+                    success: function (result) {
+                        $("#lblTaxType").val(result);
+                        $("#outputDisplayTaxType").removeClass("hidden");
+                    },
+                    failure: function (response) {
+                        alert("Faulre:" + response.responseText);
+                    },
+                    error: function (response) {
+                        alert("Error:" + response.responseText);
+                    }
+                });
+            });
+
+            var data = {
+                postalCode: $("#ddlPostalCode").val()
+            };
+
+            $.ajax({
+                type: "POST",
+                url: "/Calculator/CalculateType",
+                data: data,
+                success: function (result) {
+                    $("#lblTaxType").val(result);
+                    $("#outputDisplayTaxType").removeClass("hidden");
+                },
+                failure: function (response) {
+                    alert("Faulre:" + response.responseText);
+                },
+                error: function (response) {
+                    alert("Error:" + response.responseText);
+                }
+            });
+
+        });
+    </script>
+}
